@@ -1,5 +1,6 @@
 import { err, ok, type Result } from "neverthrow";
 import { z } from "zod";
+import { configError, type AppError } from "@errors";
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -17,11 +18,13 @@ const formatIssues = (schemaIssues: z.ZodIssue[]): string =>
     })
     .join("; ");
 
-export const loadEnv = (): Result<Env, string> => {
+export const getDefaultEnv = (): Env => EnvSchema.parse({});
+
+export const loadEnv = (): Result<Env, AppError> => {
   const parsed = EnvSchema.safeParse(process.env);
 
   if (!parsed.success) {
-    return err(formatIssues(parsed.error.issues));
+    return err(configError(formatIssues(parsed.error.issues)));
   }
 
   return ok(parsed.data);

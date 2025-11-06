@@ -1,31 +1,41 @@
 import type { Result } from "neverthrow";
-import { type Env, loadEnv } from "./config/env";
-import { type AppLogger, createLogger } from "./logger";
+import { createLogger, type AppLogger, withFields } from "@logging";
+import { getDefaultEnv, loadConfig, type AppConfig } from "@config/index";
+import { logErr, type AppError } from "@errors";
 
 export interface AppContext {
-  env: Env;
-  logger: AppLogger;
+  readonly config: AppConfig;
+  readonly logger: AppLogger;
 }
 
-export const initialize = (): Result<AppContext, string> =>
-  loadEnv().map((env) => ({
-    env,
-    logger: createLogger(env),
-  }));
+export const initialize = (): Result<AppContext, AppError> =>
+  loadConfig().map((config) => {
+    const baseLogger = createLogger(config.env);
+    const logger = withFields(baseLogger, { environment: config.env.NODE_ENV });
+
+    return {
+      config,
+      logger,
+    };
+  });
 
 export const run = (): void => {
+  const bootstrapLogger = createLogger(getDefaultEnv());
+
   initialize().match(
-    ({ env, logger }) => {
+    ({ config, logger }) => {
       logger.info(
         {
-          environment: env.NODE_ENV,
-          port: env.PORT,
+          environment: config.env.NODE_ENV,
+          port: config.env.PORT,
+          flags: config.flags,
         },
         "Application initialized",
       );
     },
     (error) => {
-      console.error("Configuration error", { error });
+      console.error("Application failed to initialize", { error });
+      logErr(bootstrapLogger, error);
       process.exitCode = 1;
     },
   );

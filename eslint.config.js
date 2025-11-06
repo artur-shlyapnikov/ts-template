@@ -37,6 +37,8 @@ export default tseslint.config(
         },
       ],
       "@typescript-eslint/prefer-reduce-type-parameter": "error",
+      "@typescript-eslint/explicit-module-boundary-types": "error",
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "no-restricted-syntax": [
         "error",
         {
@@ -44,6 +46,12 @@ export default tseslint.config(
           message: "Use neverthrow Result helpers instead of try/catch.",
         },
       ],
+    },
+  },
+  {
+    files: ["src/index.ts", "src/lifecycle.ts"],
+    rules: {
+      "no-restricted-syntax": "off",
     },
   },
 );

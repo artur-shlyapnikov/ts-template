@@ -21,12 +21,16 @@
       },
       "style": {
         "useConst": "error",
+        "noDefaultExport": "error",
         "noNonNullAssertion": "error",
         "noUselessElse": "error"
       },
       "suspicious": {
         "noExplicitAny": "error",
         "noDoubleEquals": "error"
+      },
+      "nursery": {
+        "useImportType": "error"
       }
     }
   }

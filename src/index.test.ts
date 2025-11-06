@@ -24,12 +24,16 @@ const captureConsole = (method: ConsoleMethod) => {
 const restoreEnv = (): void => {
   for (const key of Object.keys(process.env)) {
     if (!(key in originalEnv)) {
-      process.env[key] = undefined;
+      delete process.env[key];
     }
   }
 
   for (const [key, value] of Object.entries(originalEnv)) {
-    process.env[key] = value;
+    if (typeof value === "undefined") {
+      delete process.env[key];
+    } else {
+      process.env[key] = value;
+    }
   }
 
   process.exitCode = 0;
@@ -39,18 +43,20 @@ afterEach(restoreEnv);
 
 describe("initialize", () => {
   test("creates a logger with parsed environment defaults", () => {
-    process.env.NODE_ENV = undefined;
-    process.env.LOG_LEVEL = undefined;
-    process.env.PORT = undefined;
+    delete process.env.NODE_ENV;
+    delete process.env.LOG_LEVEL;
+    delete process.env.PORT;
+    delete process.env.FEATURE_EXAMPLE;
 
     const result = initialize();
 
     expect(result.isOk()).toBe(true);
 
-    const { env, logger } = result._unsafeUnwrap();
-    expect(env.NODE_ENV).toBe("development");
-    expect(env.LOG_LEVEL).toBe("info");
-    expect(env.PORT).toBe(3000);
+    const { config, logger } = result._unsafeUnwrap();
+    expect(config.env.NODE_ENV).toBe("development");
+    expect(config.env.LOG_LEVEL).toBe("info");
+    expect(config.env.PORT).toBe(3000);
+    expect(config.flags.exampleFeature).toBe(false);
     expect(logger.level).toBe("info");
     run();
     expect(process.exitCode ?? 0).toBe(0);
@@ -65,13 +71,16 @@ describe("initialize", () => {
 
     expect(result.isErr()).toBe(true);
 
-    expect(result._unsafeUnwrapErr()).toContain("PORT");
+    const appError = result._unsafeUnwrapErr();
+    expect(appError.type).toBe("ConfigError");
+    expect(appError.message).toContain("PORT");
   });
 
   test("run reports initialization success via logger", () => {
     process.env.NODE_ENV = "development";
     process.env.LOG_LEVEL = "info";
     process.env.PORT = "3010";
+    process.env.FEATURE_EXAMPLE = "false";
 
     run();
     expect(process.exitCode ?? 0).toBe(0);
@@ -87,7 +96,9 @@ describe("initialize", () => {
     run();
 
     expect(process.exitCode).toBe(1);
-    expect(errorSpy.calls.some(([message]) => message === "Configuration error")).toBe(true);
+    expect(
+      errorSpy.calls.some(([message]) => message === "Application failed to initialize"),
+    ).toBe(true);
 
     errorSpy.restore();
   });

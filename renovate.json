@@ -18,6 +18,12 @@
       "description": "Label Bun ecosystem updates",
       "matchPackagePatterns": ["^bun", "^@biomejs/"],
       "addLabels": ["bun"]
+    },
+    {
+      "description": "Automerge patch for prod deps",
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
     }
   ]
 }

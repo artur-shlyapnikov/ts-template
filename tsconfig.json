@@ -7,9 +7,15 @@
     "moduleDetection": "force",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@config/*": ["src/config/*"],
+      "@logging": ["src/logger.ts"],
+      "@errors": ["src/errors.ts"]
+    },
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "types": ["bun-types"],
     "noEmit": true,
 
@@ -24,6 +30,6 @@
     "forceConsistentCasingInFileNames": true,
     "useUnknownInCatchVariables": true
   },
-  "include": ["src"],
+  "include": ["src", "scripts"],
   "exclude": ["dist", "node_modules"]
 }
