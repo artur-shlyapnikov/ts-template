@@ -14,3 +14,7 @@ export const loadConfig = (): Result<AppConfig, AppError> =>
     flags: loadFlags(),
   }));
 export { getDefaultEnv };
+
+export const requireFlag = <K extends keyof Flags>(flags: Flags, key: K): Flags[K] => flags[key];
+
+export const requireEnv = <K extends keyof Env>(env: Env, key: K): Env[K] => env[key];

@@ -1,35 +1,20 @@
-import type { Env } from "@config/env";
 import { type Logger, type LoggerOptions, pino } from "pino";
+import type { Env } from "./config/env";
 
 export type AppLogger = Logger;
 
-const resolveTransport = (env: Env): LoggerOptions["transport"] => {
-  if (env.NODE_ENV !== "development") {
-    return undefined;
-  }
-
-  return {
-    target: "pino-pretty",
-    options: {
-      colorize: true,
-      translateTime: "SYS:standard",
-    },
-  };
-};
+const resolveTransport = (env: Env): LoggerOptions["transport"] =>
+  env.NODE_ENV === "development"
+    ? {
+        target: "pino-pretty",
+        options: { colorize: true, translateTime: "SYS:standard" },
+      }
+    : undefined;
 
 const runtimeVersion = (): string => (typeof Bun !== "undefined" ? Bun.version : process.version);
 
-const serializeError = (error: unknown) => {
-  if (error instanceof Error) {
-    return {
-      type: error.name,
-      message: error.message,
-      stack: error.stack,
-    };
-  }
-
-  return error;
-};
+const serializeError = (error: unknown): unknown =>
+  error instanceof Error ? { type: error.name, message: error.message, stack: error.stack } : error;
 
 const buildOptions = (env: Env): LoggerOptions => {
   const transport = resolveTransport(env);
@@ -43,7 +28,7 @@ const buildOptions = (env: Env): LoggerOptions => {
     },
     serializers: {
       err: serializeError,
-    },
+    } as const,
     redact: {
       paths: ["req.headers.authorization", "*.token", "*.password"],
       remove: true,
@@ -59,5 +44,7 @@ const buildOptions = (env: Env): LoggerOptions => {
 
 export const createLogger = (env: Env): AppLogger => pino(buildOptions(env));
 
-export const withFields = (logger: AppLogger, fields: Record<string, unknown>): AppLogger =>
-  logger.child(fields);
+type Primitive = string | number | boolean | null | undefined;
+type Shallow = Record<string, Primitive>;
+
+export const withFields = (logger: AppLogger, fields: Shallow): AppLogger => logger.child(fields);

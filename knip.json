@@ -1,6 +1,8 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "project": ["src/**/*.ts", "scripts/**/*.ts"],
+  "entry": ["src/index.ts"],
+  "ignore": ["**/*.test.ts"],
   "ignoreDependencies": ["pino-pretty", "@biomejs/biome"],
   "biome": true,
   "eslint": {

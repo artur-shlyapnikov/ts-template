@@ -3,22 +3,8 @@ import { initialize, run } from "./index";
 
 const originalEnv = { ...process.env };
 
-type ConsoleMethod = "info" | "error";
-
-const captureConsole = (method: ConsoleMethod) => {
-  const original = console[method];
-  const calls: unknown[][] = [];
-
-  console[method] = (...args: unknown[]) => {
-    calls.push(args);
-  };
-
-  return {
-    calls,
-    restore: () => {
-      console[method] = original;
-    },
-  };
+const setEnv = (key: string, value: string): void => {
+  process.env[key] = value;
 };
 
 const unsetEnv = (key: string): void => {
@@ -67,9 +53,9 @@ describe("initialize", () => {
   });
 
   test("fails fast when environment parsing fails", () => {
-    process.env.LOG_LEVEL = "debug";
-    process.env.NODE_ENV = "production";
-    process.env.PORT = "not-a-number";
+    setEnv("LOG_LEVEL", "debug");
+    setEnv("NODE_ENV", "production");
+    setEnv("PORT", "not-a-number");
 
     const result = initialize();
 
@@ -81,29 +67,55 @@ describe("initialize", () => {
   });
 
   test("run reports initialization success via logger", () => {
-    process.env.NODE_ENV = "development";
-    process.env.LOG_LEVEL = "info";
-    process.env.PORT = "3010";
-    process.env.FEATURE_EXAMPLE = "false";
+    setEnv("NODE_ENV", "development");
+    setEnv("LOG_LEVEL", "info");
+    setEnv("PORT", "3010");
+    setEnv("FEATURE_EXAMPLE", "false");
 
     run();
     expect(process.exitCode ?? 0).toBe(0);
   });
 
   test("run surfaces configuration errors and sets exit code", () => {
-    process.env.NODE_ENV = "production";
-    process.env.LOG_LEVEL = "info";
-    process.env.PORT = "invalid";
+    setEnv("NODE_ENV", "production");
+    setEnv("LOG_LEVEL", "info");
+    setEnv("PORT", "invalid");
 
-    const errorSpy = captureConsole("error");
+    const captureOutput = () => {
+      const originalOut = process.stdout.write.bind(process.stdout);
+      const originalErr = process.stderr.write.bind(process.stderr);
+      const calls: string[] = [];
+
+      (process.stdout as unknown as { write: (chunk: unknown) => boolean }).write = (
+        chunk: unknown,
+      ) => {
+        calls.push(String(chunk));
+        return true;
+      };
+
+      (process.stderr as unknown as { write: (chunk: unknown) => boolean }).write = (
+        chunk: unknown,
+      ) => {
+        calls.push(String(chunk));
+        return true;
+      };
+
+      return {
+        calls,
+        restore: () => {
+          process.stdout.write = originalOut;
+          process.stderr.write = originalErr;
+        },
+      };
+    };
+
+    const outSpy = captureOutput();
 
     run();
 
     expect(process.exitCode).toBe(1);
-    expect(errorSpy.calls.some(([message]) => message === "Application failed to initialize")).toBe(
-      true,
-    );
+    expect(outSpy.calls.some((c) => c.includes("Application failed to initialize"))).toBe(true);
 
-    errorSpy.restore();
+    outSpy.restore();
   });
 });

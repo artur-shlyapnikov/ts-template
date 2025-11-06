@@ -11,7 +11,7 @@
   },
   "engineStrict": true,
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir dist",
+    "build": "bun build ./src/index.ts --outdir dist && bunx tsc -p tsconfig.build.json",
     "dev": "bun run ./src/index.ts",
     "test": "bun test --coverage --threshold=70",
     "typecheck": "bunx tsc --noEmit",
@@ -24,6 +24,14 @@
     "env:print": "bun run scripts/env/print.ts",
     "env:check": "bun run scripts/env/check.ts",
     "logs:pretty": "LOG_LEVEL=debug bun run dev"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "dependencies": {
     "neverthrow": "^8.2.0",

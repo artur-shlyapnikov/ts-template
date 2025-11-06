@@ -11,7 +11,8 @@
     "paths": {
       "@config/*": ["src/config/*"],
       "@logging": ["src/logger.ts"],
-      "@errors": ["src/errors.ts"]
+      "@errors": ["src/errors.ts"],
+      "@src/*": ["src/*"]
     },
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
@@ -22,13 +23,16 @@
     "strict": true,
     "skipLibCheck": true,
     "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "forceConsistentCasingInFileNames": true,
-    "useUnknownInCatchVariables": true
+    "useUnknownInCatchVariables": true,
+    "useDefineForClassFields": true
   },
   "include": ["src", "scripts"],
   "exclude": ["dist", "node_modules"]

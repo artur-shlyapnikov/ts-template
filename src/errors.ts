@@ -1,4 +1,4 @@
-import type { AppLogger } from "@logging";
+import type { AppLogger } from "./logger";
 
 type ConfigError = {
   readonly type: "ConfigError";
@@ -24,6 +24,22 @@ export const configError = (message: string): ConfigError => ({
   message,
 });
 
+export const startupError = (message: string, cause?: unknown): StartupError => ({
+  type: "StartupError",
+  message,
+  cause,
+});
+
+export const runtimeError = (message: string, cause?: unknown): RuntimeError => ({
+  type: "RuntimeError",
+  message,
+  cause,
+});
+
+const assertNever = (x: never): never => {
+  throw new Error(`Unhandled error variant: ${String(x)}`);
+};
+
 const hasCause = (error: AppError): error is StartupError | RuntimeError =>
   "cause" in error && typeof error.cause !== "undefined";
 
@@ -39,8 +55,12 @@ export const logErr = (logger: AppLogger, err: AppError): void => {
       logger.error(payload, err.message);
       return;
     }
-    default: {
+    case "ConfigError": {
       logger.warn(payload, err.message);
+      return;
+    }
+    default: {
+      assertNever(err);
     }
   }
 };

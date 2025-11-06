@@ -1,6 +1,6 @@
-import { getDefaultEnv, loadConfig } from "@config/index";
-import { logErr } from "@errors";
-import { createLogger } from "@logging";
+import { getDefaultEnv, loadConfig } from "../../src/config/index";
+import { logErr } from "../../src/errors";
+import { createLogger } from "../../src/logger";
 
 const bootstrapLogger = createLogger(getDefaultEnv());
 

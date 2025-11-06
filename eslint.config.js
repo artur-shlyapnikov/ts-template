@@ -40,6 +40,19 @@ export default tseslint.config(
       "@typescript-eslint/prefer-reduce-type-parameter": "error",
       "@typescript-eslint/explicit-module-boundary-types": "error",
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-enum-comparison": "error",
+      "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports" }],
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
+      "@typescript-eslint/no-unnecessary-type-assertion": "error",
+      "@typescript-eslint/strict-boolean-expressions": ["error", { allowNullableBoolean: false }],
+    },
+  },
+
+  // Global ban on try/catch - allow-list via file-based overrides below
+  {
+    rules: {
       "no-restricted-syntax": [
         "error",
         {
@@ -48,6 +61,56 @@ export default tseslint.config(
         },
       ],
     },
+  },
+
+  // Forbid direct process.env usage in application code; allow in config and env scripts
+  {
+    files: ["src/**/*.ts"],
+    rules: {
+      "no-restricted-properties": [
+        "error",
+        {
+          object: "process",
+          property: "env",
+          message: "Use loadConfig()/Env/Flags only.",
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/config/**/*.ts", "scripts/env/*.ts"],
+    rules: { "no-restricted-properties": "off" },
+  },
+  {
+    files: ["src/index.test.ts"],
+    rules: { "no-restricted-properties": "off" },
+  },
+  {
+    files: ["src/**/*.test.ts", "src/index.test.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+    },
+  },
+
+  // Prevent deep relative imports; prefer path aliases
+  {
+    files: ["src/**/*.ts"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: ["../*", "../../*"] }],
+    },
+  },
+
+  // Kill stray console usage in runtime sources; allow in scripts and tests
+  {
+    files: ["src/**/*.ts"],
+    rules: { "no-console": "error" },
+  },
+  {
+    files: ["scripts/**/*.ts", "src/index.test.ts"],
+    rules: { "no-console": "off" },
   },
   {
     files: ["scripts/**/*.ts"],
