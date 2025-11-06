@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "group:definitelyTyped",
+    ":preserveSemverRanges",
+    "schedule:weekly"
+  ],
+  "timezone": "America/Los_Angeles",
+  "packageRules": [
+    {
+      "description": "Automerge minor and patch devDependency updates",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "description": "Label Bun ecosystem updates",
+      "matchPackagePatterns": ["^bun", "^@biomejs/"],
+      "addLabels": ["bun"]
+    }
+  ]
+}

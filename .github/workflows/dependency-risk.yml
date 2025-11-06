@@ -1,0 +1,20 @@
+name: Dependency Risk Scan
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  socket-scan:
+    name: Socket Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Socket Security Analysis
+        uses: socketsecurity/socket-action@v5
+        with:
+          api-token: ${{ secrets.SOCKET_TOKEN }}
+          fail-severity: high
