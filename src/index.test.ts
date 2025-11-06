@@ -47,12 +47,11 @@ describe("initialize", () => {
 
     expect(result.isOk()).toBe(true);
 
-    result.map(({ env, logger }) => {
-      expect(env.NODE_ENV).toBe("development");
-      expect(env.LOG_LEVEL).toBe("info");
-      expect(env.PORT).toBe(3000);
-      expect(logger.level).toBe("info");
-    });
+    const { env, logger } = result._unsafeUnwrap();
+    expect(env.NODE_ENV).toBe("development");
+    expect(env.LOG_LEVEL).toBe("info");
+    expect(env.PORT).toBe(3000);
+    expect(logger.level).toBe("info");
   });
 
   test("creates a production logger without altering configuration", () => {
@@ -64,12 +63,11 @@ describe("initialize", () => {
 
     expect(result.isOk()).toBe(true);
 
-    result.map(({ env, logger }) => {
-      expect(env.NODE_ENV).toBe("production");
-      expect(env.LOG_LEVEL).toBe("warn");
-      expect(env.PORT).toBe(4100);
-      expect(logger.level).toBe("warn");
-    });
+    const { env, logger } = result._unsafeUnwrap();
+    expect(env.NODE_ENV).toBe("production");
+    expect(env.LOG_LEVEL).toBe("warn");
+    expect(env.PORT).toBe(4100);
+    expect(logger.level).toBe("warn");
   });
 
   test("fails fast when environment parsing fails", () => {
@@ -81,9 +79,8 @@ describe("initialize", () => {
 
     expect(result.isErr()).toBe(true);
 
-    result.mapErr((message) => {
-      expect(message).toContain("PORT");
-    });
+    const message = result._unsafeUnwrapErr();
+    expect(message).toContain("PORT");
   });
 
   test("run reports initialization success via logger", () => {
