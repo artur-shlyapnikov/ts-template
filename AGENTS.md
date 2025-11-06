@@ -1,8 +1,11 @@
 # Repository Guidelines
 
-## Main Rule
+## Main Rules
 
 Prefer simplicity.
+Functional Core, Imperative Shell.
+
+After changing the source code, run the tests, selecting only those that will verify your changes.
 
 ## Project Structure & Module Organization
 
@@ -13,7 +16,7 @@ Prefer simplicity.
 
 ## Build, Test, and Development Commands
 
-- `bun install` – install dependencies (Bun 1.3.1+).
+- `make install` – install dependencies (Bun 1.3.1+).
 - `make build` – compile `src/index.ts` into `dist/`.
 - `make check` – run `typecheck`, `lint`, and `deadcode` in a single gate.
 - `make ci` – deterministic `build`, `check`, and `test`; mirrors CI pipelines.
@@ -22,7 +25,6 @@ Prefer simplicity.
 
 ## Coding Style & Naming Conventions
 
-- TypeScript only; strict mode enabled with `exactOptionalPropertyTypes`.
 - Imports use aliases (`@config/*`, `@errors`, `@logging`) to avoid deep relatives.
 - Formatting and linting: `bunx biome check` and `bunx eslint "{src,scripts}/**/*.ts"`.
 - Enforce Biome `useConst`, `noDefaultExport`, and typescript-eslint explicit module boundaries; prefer `type` aliases for object shapes.
@@ -30,6 +32,7 @@ Prefer simplicity.
 
 ## Testing Guidelines
 
+- Before implementing tests, start with the test design step. First, check the happy paths, and only then the edge cases.
 - Framework: `bun test`; keep tests alongside sources (`*.test.ts`).
 - Name specs after the unit under test (e.g., `index.test.ts`) and use Behavior-style `describe` blocks.
 

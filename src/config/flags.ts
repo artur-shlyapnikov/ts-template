@@ -4,9 +4,9 @@ const FlagSchema = z.object({
   FEATURE_EXAMPLE: z.coerce.boolean().default(false),
 });
 
-export interface Flags {
+export type Flags = {
   readonly exampleFeature: boolean;
-}
+};
 
 export const loadFlags = (): Flags => {
   const parsed = FlagSchema.parse(process.env);

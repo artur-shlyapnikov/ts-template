@@ -1,5 +1,5 @@
-import { pino, type Logger, type LoggerOptions } from "pino";
 import type { Env } from "@config/env";
+import { type Logger, type LoggerOptions, pino } from "pino";
 
 export type AppLogger = Logger;
 
@@ -17,8 +17,7 @@ const resolveTransport = (env: Env): LoggerOptions["transport"] => {
   };
 };
 
-const runtimeVersion = (): string =>
-  typeof Bun !== "undefined" ? Bun.version : process.version;
+const runtimeVersion = (): string => (typeof Bun !== "undefined" ? Bun.version : process.version);
 
 const serializeError = (error: unknown) => {
   if (error instanceof Error) {

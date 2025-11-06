@@ -1,12 +1,12 @@
+import { type AppConfig, getDefaultEnv, loadConfig } from "@config/index";
+import { type AppError, logErr } from "@errors";
+import { type AppLogger, createLogger, withFields } from "@logging";
 import type { Result } from "neverthrow";
-import { createLogger, type AppLogger, withFields } from "@logging";
-import { getDefaultEnv, loadConfig, type AppConfig } from "@config/index";
-import { logErr, type AppError } from "@errors";
 
-export interface AppContext {
+export type AppContext = {
   readonly config: AppConfig;
   readonly logger: AppLogger;
-}
+};
 
 export const initialize = (): Result<AppContext, AppError> =>
   loadConfig().map((config) => {

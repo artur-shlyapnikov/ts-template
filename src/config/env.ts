@@ -1,6 +1,6 @@
+import { type AppError, configError } from "@errors";
 import { err, ok, type Result } from "neverthrow";
 import { z } from "zod";
-import { configError, type AppError } from "@errors";
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),

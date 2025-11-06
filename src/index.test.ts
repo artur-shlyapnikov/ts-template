@@ -21,16 +21,20 @@ const captureConsole = (method: ConsoleMethod) => {
   };
 };
 
+const unsetEnv = (key: string): void => {
+  Reflect.deleteProperty(process.env, key);
+};
+
 const restoreEnv = (): void => {
   for (const key of Object.keys(process.env)) {
     if (!(key in originalEnv)) {
-      delete process.env[key];
+      unsetEnv(key);
     }
   }
 
   for (const [key, value] of Object.entries(originalEnv)) {
     if (typeof value === "undefined") {
-      delete process.env[key];
+      unsetEnv(key);
     } else {
       process.env[key] = value;
     }
@@ -43,10 +47,10 @@ afterEach(restoreEnv);
 
 describe("initialize", () => {
   test("creates a logger with parsed environment defaults", () => {
-    delete process.env.NODE_ENV;
-    delete process.env.LOG_LEVEL;
-    delete process.env.PORT;
-    delete process.env.FEATURE_EXAMPLE;
+    unsetEnv("NODE_ENV");
+    unsetEnv("LOG_LEVEL");
+    unsetEnv("PORT");
+    unsetEnv("FEATURE_EXAMPLE");
 
     const result = initialize();
 
@@ -96,9 +100,9 @@ describe("initialize", () => {
     run();
 
     expect(process.exitCode).toBe(1);
-    expect(
-      errorSpy.calls.some(([message]) => message === "Application failed to initialize"),
-    ).toBe(true);
+    expect(errorSpy.calls.some(([message]) => message === "Application failed to initialize")).toBe(
+      true,
+    );
 
     errorSpy.restore();
   });

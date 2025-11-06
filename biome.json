@@ -28,9 +28,6 @@
       "suspicious": {
         "noExplicitAny": "error",
         "noDoubleEquals": "error"
-      },
-      "nursery": {
-        "useImportType": "error"
       }
     }
   }

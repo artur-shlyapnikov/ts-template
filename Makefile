@@ -1,6 +1,10 @@
 SHELL := /bin/bash
 
-.PHONY: build test typecheck lint lint-fix deadcode coverage hooks check ci
+.PHONY: build test typecheck lint lint-fix deadcode coverage hooks check ci install
+
+
+install:
+	bun install
 
 build:
 	bun run build
@@ -9,10 +13,11 @@ test:
 	bun run test
 
 typecheck:
-	bun run typecheck
+	bunx tsc --noEmit
 
 lint:
-	bun run lint
+	bun run lint:base
+	bun run lint:ts
 
 lint-fix:
 	bun run lint:fix

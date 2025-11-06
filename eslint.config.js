@@ -1,5 +1,6 @@
 import tseslint from "typescript-eslint";
 
+// biome-ignore lint/style/noDefaultExport: ESLint flat config requires a default export.
 export default tseslint.config(
   {
     ignores: ["dist", "coverage", "node_modules"],
@@ -46,6 +47,16 @@ export default tseslint.config(
           message: "Use neverthrow Result helpers instead of try/catch.",
         },
       ],
+    },
+  },
+  {
+    files: ["scripts/**/*.ts"],
+    languageOptions: {
+      parserOptions: {
+        project: "./tsconfig.json",
+        tsconfigRootDir: import.meta.dirname,
+        sourceType: "module",
+      },
     },
   },
   {
