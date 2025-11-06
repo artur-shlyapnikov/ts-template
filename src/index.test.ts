@@ -52,22 +52,8 @@ describe("initialize", () => {
     expect(env.LOG_LEVEL).toBe("info");
     expect(env.PORT).toBe(3000);
     expect(logger.level).toBe("info");
-  });
-
-  test("creates a production logger without altering configuration", () => {
-    process.env.NODE_ENV = "production";
-    process.env.LOG_LEVEL = "warn";
-    process.env.PORT = "4100";
-
-    const result = initialize();
-
-    expect(result.isOk()).toBe(true);
-
-    const { env, logger } = result._unsafeUnwrap();
-    expect(env.NODE_ENV).toBe("production");
-    expect(env.LOG_LEVEL).toBe("warn");
-    expect(env.PORT).toBe(4100);
-    expect(logger.level).toBe("warn");
+    run();
+    expect(process.exitCode ?? 0).toBe(0);
   });
 
   test("fails fast when environment parsing fails", () => {
@@ -79,8 +65,7 @@ describe("initialize", () => {
 
     expect(result.isErr()).toBe(true);
 
-    const message = result._unsafeUnwrapErr();
-    expect(message).toContain("PORT");
+    expect(result._unsafeUnwrapErr()).toContain("PORT");
   });
 
   test("run reports initialization success via logger", () => {

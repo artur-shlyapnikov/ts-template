@@ -1,9 +1,8 @@
 # TypeScript Template
 
-Modern Bun-powered TypeScript starter with strict defaults. Install dependencies with:
+Bun + strict TypeScript starter with sane defaults.
 
-```bash
-bun install
-```
-
-Project tooling, scripts, and usage are documented alongside the configuration in this repository.
+- `bun install` to bootstrap dependencies
+- `make build test lint typecheck deadcode coverage` mirrors CI
+- Tooling: Biome, typescript-eslint (no try/catch), Knip, Bun test (70% cov), simple-git-hooks + lint-staged
+- Runtime kit: neverthrow, zod env loader, pino+pino-pretty, plus Renovate, Dependency Review, and Socket security scans
